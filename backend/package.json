@@ -11,8 +11,12 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "cors": "^2.8.6",
     "dockerode": "^5.0.1",
     "express": "^5.2.1",
     "node": "^26.6.0"
+  },
+  "devDependencies": {
+    "@types/dockerode": "^4.0.1"
   }
 }
