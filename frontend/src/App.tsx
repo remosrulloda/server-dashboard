@@ -1,16 +1,33 @@
 import { useState, useEffect } from "react";
-import Container from "./components/Container";
 
-interface ContainerData {
-  id: number;
+interface DockerContainer {
+  Id: string;
+  Names: string[];
+  State: string;
+  Ports: { PublicPort: undefined }[];
+}
+
+interface ContainerProps {
   containerName: string,
-  status: string,
-  port: number,
-  link: string
+  state: string,
+  port: undefined,
+}
+
+function Container({ containerName, state, port }: ContainerProps) {
+  const portLink = `http://localhost:${port}`;
+
+  return (
+    <div className="container">
+      <h2>{containerName}</h2>
+      <h3>State: {state}</h3>
+      <h4>Port: {port}</h4>
+      <a href={portLink}>Link</a>
+    </div >
+  );
 }
 
 function Containers() {
-  const [containers, setContainers] = useState<ContainerData[]>([]);
+  const [containers, setContainers] = useState<DockerContainer[]>([]);
 
   useEffect(() => {
     fetch("http://localhost:3000/containers")
@@ -26,7 +43,14 @@ function Containers() {
 
   return (
     <div className="containers">
-
+      {containers.map((container) => (
+        <Container
+          key={container.Id}
+          containerName={container.Names?.[0]}
+          state={container.State}
+          port={container.Ports?.[0].PublicPort}
+        />
+      ))}
     </div>
   );
 }
@@ -35,7 +59,7 @@ function Containers() {
 function App() {
   return (
     <>
-      <p>test</p>
+      <h2>Containers</h2>
       <Containers />
 
     </>
