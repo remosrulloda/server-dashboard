@@ -1,20 +1,26 @@
 import { useState, useEffect } from "react";
 
+interface DockerPort {
+  PrivatePort: number;
+  PublicPort?: number;
+  Type: string;
+}
+
 interface DockerContainer {
   Id: string;
   Names: string[];
   State: string;
-  Ports: { PublicPort: undefined }[];
+  Ports: DockerPort[];
 }
 
 interface ContainerProps {
-  containerName: string,
-  state: string,
-  port: undefined,
+  containerName: string;
+  state: string;
+  port?: number;
 }
 
 function Container({ containerName, state, port }: ContainerProps) {
-  const portLink = `http://localhost:${port}`;
+  const portLink = port ? `http://localhost:${port}` : undefined;
 
   return (
     <div className="container">
@@ -46,7 +52,7 @@ function Containers() {
       {containers.map((container) => (
         <Container
           key={container.Id}
-          containerName={container.Names?.[0]}
+          containerName={container.Names?.[0] ?? "Unnamed Container"}
           state={container.State}
           port={container.Ports?.[0].PublicPort}
         />

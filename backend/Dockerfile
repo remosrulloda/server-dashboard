@@ -1,8 +1,13 @@
-# syntax=docker/dockerfile:1
+FROM node:26-alpine
 
-FROM node:24-alpine
-WORKDIR .
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install 
+
 COPY . .
-RUN npm install --omit=dev
-CMD ["node", "app.ts"]
+
 EXPOSE 3000
+
+CMD ["node", "src/app.ts"]
