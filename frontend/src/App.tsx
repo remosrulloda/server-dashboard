@@ -36,7 +36,7 @@ function Container({ containerName, state, port }: ContainerProps) {
 function Containers() {
   const [containers, setContainers] = useState<DockerContainer[]>([]);
   const hostname = window.location.hostname;
-  const port = 3030;
+  const port = 3000;
 
   const fetchLink = `http://${hostname}:${port}/containers`;
 
