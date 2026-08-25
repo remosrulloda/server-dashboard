@@ -35,9 +35,13 @@ function Container({ containerName, state, port }: ContainerProps) {
 
 function Containers() {
   const [containers, setContainers] = useState<DockerContainer[]>([]);
+  const hostname = window.location.hostname;
+  const port = 3030;
+
+  const fetchLink = `http://${hostname}:${port}/containers`;
 
   useEffect(() => {
-    fetch("http://localhost:3000/containers")
+    fetch(fetchLink)
       .then(res => res.json())
       .then((data) => {
         console.log(data);
