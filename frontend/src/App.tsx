@@ -20,7 +20,8 @@ interface ContainerProps {
 }
 
 function Container({ containerName, state, port }: ContainerProps) {
-  const portLink = port ? `http://localhost:${port}` : undefined;
+  const hostname = window.location.hostname;
+  const portLink = port ? `http://${hostname}:${port}` : undefined;
 
   return (
     <div className="container">
