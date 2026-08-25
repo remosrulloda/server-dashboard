@@ -59,7 +59,7 @@ function Containers() {
           key={container.Id}
           containerName={container.Names?.[0] ?? "Unnamed Container"}
           state={container.State}
-          port={container.Ports?.[0].PrivatePort}
+          port={container.Ports?.[0]?.PrivatePort}
         />
       ))}
     </div>
