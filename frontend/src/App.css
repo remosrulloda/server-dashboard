@@ -1,5 +1,34 @@
+.content {
+  display: grid;
+  grid-template-areas: 
+   "sidebar menubar"
+   "sidebar containers";
+  height: 100vh;
+  grid-template-columns: 1fr 3fr;
+  grid-template-rows: 1fr 5fr;
+}
+
+.menubar {
+  grid-area: menubar;
+}
+
+.sidebar {
+  grid-area: sidebar;
+  background-color: blue;
+}
+
+.containers {
+  grid-area: containers;
+  display: grid;
+  grid-template-columns: auto auto auto auto auto;
+  background-color: orange;
+  padding: 20px;
+}
+
 .container {
-  border: 2px black solid;
-  padding: 10px;
+  padding: 20px;
   width: fit-content;
+  height: fit-content;
+  text-align: center;
+  gap: 10px;
 }
