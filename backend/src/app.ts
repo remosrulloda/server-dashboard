@@ -8,7 +8,7 @@ app.use(cors());
 const port = 3000;
 
 const docker = new Docker({
-    socketPath: `/var/run/docker.sock`,
+    socketPath: '/var/run/docker.sock'
 });
 
 app.get('/', (req: Request, res: Response) => {

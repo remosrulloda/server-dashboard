@@ -33,6 +33,10 @@ function Container({ containerName, state, port }: ContainerProps) {
     );
 }
 
+// function getPrimaryWebPort(ports: DockerPort) {
+
+// }
+
 function Containers() {
     const [containers, setContainers] = useState<DockerContainer[]>([]);
     const hostname = window.location.hostname;

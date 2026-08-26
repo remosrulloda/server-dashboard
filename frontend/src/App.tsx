@@ -1,4 +1,4 @@
-import Containers from "./components/Component";
+import Containers from "./components/Container";
 import SideBar from "./components/SideBar";
 import MenuBar from "./components/MenuBar";
 
