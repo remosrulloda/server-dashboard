@@ -7,9 +7,13 @@ app.use(cors());
 
 const port = 3000;
 
-const docker = new Docker({
-    socketPath: '/var/run/docker.sock'
-});
+const isMac = process.platform === 'darwin';
+
+const socketPath = process.env.DOCKER_SOCKET_PATH || (
+    isMac ? `${process.env.HOME}/.dockerrun/docker.sock` : '/var/run/docker.sock'
+);
+
+const docker = new Docker({ socketPath });
 
 app.get('/', (req: Request, res: Response) => {
     res.send('');
