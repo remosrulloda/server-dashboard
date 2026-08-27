@@ -34,9 +34,9 @@ function Container({ containerName, state, port }: ContainerProps) {
                     State: {state} <br></br>
                     Port: {port}
                 </Card.Text>
-                <Button variant="primary"><a href={portLink}>Link</a></Button>
+                <Button variant="primary" href={portLink} disabled={!portLink}>Link</Button>
             </Card.Body>
-        </Card>
+        </Card >
     );
 }
 
@@ -65,9 +65,9 @@ function Containers() {
                 {containers.map((container) => (
                     <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={container.Id}>
                         <Container
-                            containerName={container.Names?.[0] ?? "Untitled"}
+                            containerName={(container.Names?.[0] ?? "Untitled").replace(/^\//, "")}
                             state={container.State}
-                            port={container.Ports?.[0]?.PrivatePort}
+                            port={container.Ports?.[0]?.PublicPort}
                         />
                     </div>
                 ))}
