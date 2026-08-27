@@ -4,6 +4,8 @@ services:
     container_name: backend-dev
     ports: 
       - 3000:3000
+    volumes:
+      - $HOME/.docker/run/docker.sock:/var/run/docker.sock
   
   frontend:
     image: frontend-dev:latest

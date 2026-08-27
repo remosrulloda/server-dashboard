@@ -14,14 +14,13 @@
 
 .sidebar {
   grid-area: sidebar;
-  background-color: blue;
+  background-color: #212529;
 }
 
 .containers {
   grid-area: containers;
   display: grid;
   grid-template-columns: auto auto auto auto auto;
-  background-color: orange;
   padding: 20px;
 }
 
@@ -31,4 +30,9 @@
   height: fit-content;
   text-align: center;
   gap: 10px;
+}
+
+.container a {
+  color: white;
+  text-decoration: none;
 }

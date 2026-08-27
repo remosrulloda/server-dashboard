@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { Button, } from "react-bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css"
 
 interface DockerPort {
     PrivatePort: number;
@@ -24,11 +26,11 @@ function Container({ containerName, state, port }: ContainerProps) {
     const portLink = port ? `http://${hostname}:${port}` : undefined;
 
     return (
-        <div className="container">
-            <h2>{containerName}</h2>
-            <h3>State: {state}</h3>
-            <h4>Port: {port}</h4>
-            <a href={portLink}>Link</a>
+        <div className="container" style={{ width: '10rem' }}>
+            <h5>{containerName}</h5>
+            <p>State: {state}</p>
+            <p>Port: {port}</p>
+            <Button><a href={portLink}>Link</a></Button>
         </div >
     );
 }
