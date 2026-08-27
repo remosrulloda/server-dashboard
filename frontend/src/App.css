@@ -4,8 +4,8 @@
    "sidebar menubar"
    "sidebar containers";
   height: 100vh;
-  grid-template-columns: 1fr 3fr;
-  grid-template-rows: 1fr 5fr;
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: auto 1fr;
 }
 
 .menubar {
@@ -15,24 +15,17 @@
 .sidebar {
   grid-area: sidebar;
   background-color: #212529;
+  min-height: 100vh;
 }
 
 .containers {
   grid-area: containers;
-  display: grid;
-  grid-template-columns: auto auto auto auto auto;
-  padding: 20px;
+  overflow-y: auto;
+  background-color: #f8f9fa;
 }
 
-.container {
-  padding: 20px;
-  width: fit-content;
-  height: fit-content;
-  text-align: center;
-  gap: 10px;
-}
-
-.container a {
+.card a{
   color: white;
   text-decoration: none;
 }
+

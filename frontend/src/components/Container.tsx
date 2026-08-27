@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Button, } from "react-bootstrap";
+import { Button, Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css"
 
 interface DockerPort {
@@ -26,18 +26,19 @@ function Container({ containerName, state, port }: ContainerProps) {
     const portLink = port ? `http://${hostname}:${port}` : undefined;
 
     return (
-        <div className="container" style={{ width: '10rem' }}>
-            <h5>{containerName}</h5>
-            <p>State: {state}</p>
-            <p>Port: {port}</p>
-            <Button><a href={portLink}>Link</a></Button>
-        </div >
+        <Card style={{ width: '18rem' }}>
+            <Card.Img variant="top" src="holder.js/100px180" />
+            <Card.Body>
+                <Card.Title>{containerName}</Card.Title>
+                <Card.Text>
+                    State: {state} <br></br>
+                    Port: {port}
+                </Card.Text>
+                <Button variant="primary"><a href={portLink}>Link</a></Button>
+            </Card.Body>
+        </Card>
     );
 }
-
-// function getPrimaryWebPort(ports: DockerPort) {
-
-// }
 
 function Containers() {
     const [containers, setContainers] = useState<DockerContainer[]>([]);
@@ -59,15 +60,18 @@ function Containers() {
     }, []);
 
     return (
-        <div className="containers">
-            {containers.map((container) => (
-                <Container
-                    key={container.Id}
-                    containerName={container.Names?.[0] ?? "Unnamed Container"}
-                    state={container.State}
-                    port={container.Ports?.[0]?.PrivatePort}
-                />
-            ))}
+        <div className="containers container-fluid p-4">
+            <div className="row g-4">
+                {containers.map((container) => (
+                    <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={container.Id}>
+                        <Container
+                            containerName={container.Names?.[0] ?? "Untitled"}
+                            state={container.State}
+                            port={container.Ports?.[0]?.PrivatePort}
+                        />
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
