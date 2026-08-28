@@ -35,17 +35,47 @@ function Container({ containerName, state, port }: ContainerProps) {
                     Port: {port}
                 </Card.Text>
                 <Button variant="primary" href={portLink} disabled={!portLink}>Link</Button>
+                <Button variant="secondary" >Stop</Button>
+                <Button variant="info" >Restart</Button>
+                <Button variant="danger" >Delete</Button>
             </Card.Body>
         </Card >
     );
 }
+
+
+
+// function startContainer() {
+
+
+// }
+
+// function stopContainer() {
+
+
+// }
+
+// function restartContainer() {
+
+
+// }
+
+// function pauseContainer() {
+
+
+// }
+
+// function deleteContainer() {
+
+
+// }
 
 function Containers() {
     const [containers, setContainers] = useState<DockerContainer[]>([]);
     const hostname = window.location.hostname;
     const port = 3000;
 
-    const fetchLink = `http://${hostname}:${port}/containers`;
+    const fetchLink = `http://${hostname}:${port}/api/containers`;
 
     useEffect(() => {
         fetch(fetchLink)

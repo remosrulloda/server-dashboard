@@ -19,15 +19,24 @@ app.get('/', (req: Request, res: Response) => {
     res.send('');
 });
 
-app.get('/containers', async (req: Request, res: Response) => {
+// Gets all containers
+app.get('/api/containers', async (req: Request, res: Response) => {
     try {
         const containers = await docker.listContainers();
         res.json(containers);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Failed to list docker containers' });
+        res.status(500).json({ error: 'Failed to fetch docker containers' });
     }
 });
+
+// Starts container
+// app.post('/api/containers/:id/actions/start')
+
+// // Stops container
+// app.post('/api/containers/:id/actions/stop')
+
+
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
