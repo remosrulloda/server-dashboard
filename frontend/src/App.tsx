@@ -5,7 +5,6 @@ import MenuBar from "./components/MenuBar";
 function App() {
   return (
     <div className="content">
-      <SideBar />
       <MenuBar />
       <Containers />
     </div>
