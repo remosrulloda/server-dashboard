@@ -35,35 +35,44 @@ function Container({ id, containerName, state, port }: ContainerProps) {
 
 async function startContainer(id: string) {
     try {
-        const response = await fetch(`${BASE_URL}/${id}/start`, { method: 'POST' });
-        const data = await response.json();
+        const startPromise = (async () => {
+            const response = await fetch(`${BASE_URL}/${id}/start`, { method: 'POST' });
+            if (!response.ok) {
+                throw new Error(`Server returned status ${response.status}`);
+            }
+            return await response.json();
+        })();
 
-        if (!data) {
-            toast.error(`Failed to start container ${data.container.name}`);
-        } else {
-            toast.success(`Container "${data.container.name}" started`);
-        }
-        return data;
+        toast.promise(startPromise, {
+            loading: "Starting container",
+            success: (data) => `Started container ${data?.container?.name}`,
+            error: (err) => `Failed to start container: ${err.message}`,
+        });
+
     } catch (err) {
-        console.error("Error starting container:", err);
+        console.error("Error starting container:", err)
     }
-
 }
 
 async function stopContainer(id: string) {
     try {
-        const response = await fetch(`${BASE_URL}/${id}/stop`, { method: 'POST' });
-        const data = await response.json();
+        const stopPromise = (async () => {
+            const response = await fetch(`${BASE_URL}/${id}/stop`, { method: 'POST' });
+            if (!response.ok) {
+                throw new Error(`Server returned status ${response.status}`);
+            }
+            return await response.json();
+        })();
 
-        if (!data) {
-            toast.error(`Failed to stop container ${data.container.name}`);
-        } else {
-            toast.success(`Container "${data.container.name}" stopped`);
-        }
+        toast.promise(stopPromise, {
+            loading: "Stopping container",
+            success: (data) => `Stopped container ${data?.container?.name}`,
+            error: (err) => `Failed to stop container: ${err.message}`,
+        });
+
     } catch (err) {
         console.error("Error stopping container:", err)
     }
-
 }
 
 async function restartContainer(id: string) {
@@ -81,7 +90,7 @@ async function restartContainer(id: string) {
         toast.promise(restartPromise, {
             loading: 'Restarting container...',
             success: (data) => `Successfully restarted container ${data?.container?.name ?? id}`,
-            error: (err) => `Failed to restarted container: ${err.message}`
+            error: (err) => `Failed to restart container: ${err.message}`
         }
         );
 
