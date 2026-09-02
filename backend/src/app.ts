@@ -33,11 +33,25 @@ app.get('/api/containers', async (req: Request, res: Response) => {
 app.post('/api/containers/:id/start', async (req: Request, res: Response) => {
     try {
         const container = docker.getContainer(req.params.id);
-        const data = await container.inspect();
+        let data = await container.inspect();
+
         if (!data.State.Running) {
             await container.start();
+            data = await container.inspect();
         }
-        res.json({ message: `Container ${req.params.id} started successfully` });
+
+        return res.status(200).json({
+            success: true,
+            message: `Container ${req.params.id} started successfully`,
+            container: {
+                id: data.Id,
+                name: data.Name,
+                status: data.State.Status,
+                startedAt: data.State.StartedAt,
+                ports: data.NetworkSettings.Ports
+            }
+        });
+
     } catch (err: any) {
         console.error(err);
         if (err.statusCode === 404) {
@@ -55,7 +69,17 @@ app.post('/api/containers/:id/stop', async (req: Request, res: Response) => {
         if (data.State.Running) {
             await container.stop();
         }
-        res.json({ message: `Container ${req.params.id} stopped successfully` });
+        return res.status(200).json({
+            success: true,
+            message: `Container ${req.params.id} stopped successfully`,
+            container: {
+                id: data.Id,
+                name: data.Name,
+                status: data.State.Status,
+                startedAt: data.State.StartedAt,
+                ports: data.NetworkSettings.Ports
+            }
+        });
     } catch (err: any) {
         console.error(err);
         if (err.statusCode === 404) {
@@ -69,8 +93,21 @@ app.post('/api/containers/:id/stop', async (req: Request, res: Response) => {
 app.post('/api/containers/:id/restart', async (req: Request, res: Response) => {
     try {
         const container = docker.getContainer(req.params.id);
-        await container.restart({ t: 10 });
-        res.json({ message: `Container ${req.params.id} restarted successfully` });
+        await container.restart({ t: 15 });
+        let data = await container.inspect();
+
+        return res.status(200).json({
+            success: true,
+            message: `Container ${req.params.id} stopped successfully`,
+            container: {
+                id: data.Id,
+                name: data.Name,
+                status: data.State.Status,
+                startedAt: data.State.StartedAt,
+                ports: data.NetworkSettings.Ports
+            }
+        });
+
     } catch (err: any) {
         console.error(err);
         if (err.statusCode === 404) {
@@ -84,8 +121,20 @@ app.post('/api/containers/:id/restart', async (req: Request, res: Response) => {
 app.delete('/api/containers/:id', async (req: Request, res: Response) => {
     try {
         const container = docker.getContainer(req.params.id);
-        await container.remove();
-        res.json({ message: `Container ${req.params.id} deleted successfully` });
+        const data = await container.inspect();
+        await container.remove({ force: true });
+
+        return res.status(200).json({
+            success: true,
+            message: `Container ${req.params.id} deleted successfully`,
+            container: {
+                id: data.Id,
+                name: data.Name,
+                status: data.State.Status,
+                startedAt: data.State.StartedAt,
+                ports: data.NetworkSettings.Ports
+            }
+        });
     } catch (err: any) {
         console.error(err);
         if (err.statusCode === 404) {
@@ -94,8 +143,6 @@ app.delete('/api/containers/:id', async (req: Request, res: Response) => {
         res.status(500).json({ error: "Failed to delete container" });
     }
 });
-
-
 
 
 app.listen(port, () => {

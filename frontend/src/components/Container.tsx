@@ -1,19 +1,6 @@
-import { useState, useEffect } from "react";
 import { Button, Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css"
-
-interface DockerPort {
-    PrivatePort: number;
-    PublicPort?: number;
-    Type: string;
-}
-
-interface DockerContainer {
-    Id: string;
-    Names: string[];
-    State: string;
-    Ports: DockerPort[];
-}
+import toast from "react-hot-toast";
 
 interface ContainerProps {
     id: string;
@@ -21,14 +8,14 @@ interface ContainerProps {
     state: string;
     port?: number;
 }
+
 const HOSTNAME = window.location.hostname;
-const API_BASE = `http://${HOSTNAME}:3000/api/containers`
+const BASE_URL = `http://${HOSTNAME}:3000/api/containers`
 
 function Container({ id, containerName, state, port }: ContainerProps) {
     const portLink = port ? `http://${HOSTNAME}:${port}` : undefined;
     return (
-        <Card style={{ width: '18rem' }}>
-            <Card.Img variant="top" src="holder.js/100px180" />
+        <Card style={{ width: '14rem' }}>
             <Card.Body>
                 <Card.Title>{containerName}</Card.Title>
                 <Card.Text>
@@ -46,62 +33,82 @@ function Container({ id, containerName, state, port }: ContainerProps) {
     );
 }
 
-// TODO: Compose functions together
-function startContainer(id: string) {
-    fetch(`${API_BASE}/${id}/start`, { method: 'POST' })
-        .then((data) => console.log(data))
-        .catch((err) => console.error("Error starting container:", err));
+async function startContainer(id: string) {
+    try {
+        const response = await fetch(`${BASE_URL}/${id}/start`, { method: 'POST' });
+        const data = await response.json();
+
+        if (!data) {
+            toast.error(`Failed to start container ${data.container.name}`);
+        } else {
+            toast.success(`Container "${data.container.name}" started`);
+        }
+        return data;
+    } catch (err) {
+        console.error("Error starting container:", err);
+    }
+
 }
 
-function stopContainer(id: string) {
-    fetch(`${API_BASE}/${id}/stop`, { method: 'POST' })
-        .then((data) => console.log(data))
-        .catch((err) => console.error("Error stopping container:", err));
+async function stopContainer(id: string) {
+    try {
+        const response = await fetch(`${BASE_URL}/${id}/stop`, { method: 'POST' });
+        const data = await response.json();
+
+        if (!data) {
+            toast.error(`Failed to stop container ${data.container.name}`);
+        } else {
+            toast.success(`Container "${data.container.name}" stopped`);
+        }
+    } catch (err) {
+        console.error("Error stopping container:", err)
+    }
+
 }
 
-function restartContainer(id: string) {
-    fetch(`${API_BASE}/${id}/restart`, { method: 'POST' })
-        .then((data) => console.log(data))
-        .catch((err) => console.error("Error restarting container:", err));
+async function restartContainer(id: string) {
+    try {
+        const restartPromise = (async () => {
+            const response = await fetch(`${BASE_URL}/${id}/restart`, { method: 'POST' });
+
+            if (!response.ok) {
+                throw new Error(`Server returned status ${response.status}`);
+            }
+
+            return await response.json();
+        })();
+
+        toast.promise(restartPromise, {
+            loading: 'Restarting container...',
+            success: (data) => `Successfully restarted container ${data?.container?.name ?? id}`,
+            error: (err) => `Failed to restarted container: ${err.message}`
+        }
+        );
+
+    } catch (err) {
+        console.error("Error restarting container:", err);
+    }
 }
 
 function deleteContainer(id: string) {
-    fetch(`${API_BASE}/${id}`, { method: 'DELETE' })
-        .then((data) => console.log(data))
-        .catch((err) => console.error("Error deleting container:", err));
-}
+    const deletePromise = (async () => {
+        const response = await fetch(`${BASE_URL}/${id}`, { method: 'DELETE' });
 
-function Containers() {
-    const [containers, setContainers] = useState<DockerContainer[]>([]);
-    const fetchLink = API_BASE;
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData || `Server returned status ${response.status}`);
+        }
 
-    useEffect(() => {
-        fetch(fetchLink)
-            .then(res => res.json())
-            .then((data) => {
-                setContainers(data);
-            })
-            .catch((error) => {
-                console.error("Error fetching containers: ", error);
-            })
-    }, [containers, fetchLink]);
+        return await response.json();
+    })();
 
-    return (
-        <div className="containers container-fluid p-4">
-            <div className="row g-4">
-                {containers.map((container) => (
-                    <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={container.Id}>
-                        <Container
-                            id={container.Id}
-                            containerName={(container.Names?.[0] ?? "Untitled").replace(/^\//, "")}
-                            state={container.State}
-                            port={container.Ports?.[0]?.PublicPort}
-                        />
-                    </div>
-                ))}
-            </div>
-        </div>
+    toast.promise(deletePromise, {
+        loading: 'Deleting container...',
+        success: (data) => `Successfully deleted container ${data?.container?.name ?? id}`,
+        error: (err) => `Failed to delete container: ${err.message}`
+    }
     );
 }
 
-export default Containers;
+
+export default Container;
