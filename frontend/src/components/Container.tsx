@@ -17,12 +17,11 @@ function Container({ id, containerName, state, port }: ContainerProps) {
     return (
         <Card style={{ width: '14rem' }}>
             <Card.Body>
-                <Card.Title>{containerName}</Card.Title>
+                <Card.Title ><a href={portLink}>{containerName}</a></Card.Title>
                 <Card.Text>
                     State: {state} <br></br>
                     Port: {port}
                 </Card.Text>
-                <Button variant="primary" href={portLink} disabled={!portLink}>Link</Button>
                 <br />
                 <Button variant="secondary" onClick={() => stopContainer(id)}>Stop</Button>
                 <Button variant="success" onClick={() => startContainer(id)}>Start</Button>

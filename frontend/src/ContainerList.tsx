@@ -30,7 +30,7 @@ function ContainerList() {
             .catch((error) => {
                 console.error("Error fetching containers: ", error);
             })
-    }, [containers, fetchLink]);
+    }, [fetchLink]);
 
     return (
         <div className="containers container-fluid p-4">
