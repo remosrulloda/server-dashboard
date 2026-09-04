@@ -15,7 +15,7 @@ const BASE_URL = `http://${HOSTNAME}:3000/api/containers`
 function Container({ id, containerName, state, port }: ContainerProps) {
     const portLink = port ? `http://${HOSTNAME}:${port}` : undefined;
     return (
-        <Card style={{ width: '14rem' }}>
+        <Card style={{ width: '14rem' }} className="card">
             <Card.Body>
                 <Card.Title ><a href={portLink}>{containerName}</a></Card.Title>
                 <Card.Text>
@@ -32,70 +32,56 @@ function Container({ id, containerName, state, port }: ContainerProps) {
     );
 }
 
-async function startContainer(id: string) {
-    try {
-        const startPromise = (async () => {
-            const response = await fetch(`${BASE_URL}/${id}/start`, { method: 'POST' });
-            if (!response.ok) {
-                throw new Error(`Server returned status ${response.status}`);
-            }
-            return await response.json();
-        })();
+function startContainer(id: string) {
+    const startPromise = (async () => {
+        const response = await fetch(`${BASE_URL}/${id}/start`, { method: 'POST' });
+        if (!response.ok) {
+            throw new Error(`Server returned status ${response.status}`);
+        }
+        return await response.json();
+    })();
 
-        toast.promise(startPromise, {
-            loading: "Starting container",
-            success: (data) => `Started container ${data?.container?.name}`,
-            error: (err) => `Failed to start container: ${err.message}`,
-        });
-
-    } catch (err) {
-        console.error("Error starting container:", err)
-    }
+    toast.promise(startPromise, {
+        loading: "Starting container",
+        success: (data) => `Started container ${data?.container?.name}`,
+        error: (err) => `Failed to start container: ${err.message}`,
+    });
 }
 
 async function stopContainer(id: string) {
-    try {
-        const stopPromise = (async () => {
-            const response = await fetch(`${BASE_URL}/${id}/stop`, { method: 'POST' });
-            if (!response.ok) {
-                throw new Error(`Server returned status ${response.status}`);
-            }
-            return await response.json();
-        })();
+    const stopPromise = (async () => {
+        const response = await fetch(`${BASE_URL}/${id}/stop`, { method: 'POST' });
+        if (!response.ok) {
+            throw new Error(`Server returned status ${response.status}`);
+        }
+        return await response.json();
+    })();
 
-        toast.promise(stopPromise, {
-            loading: "Stopping container",
-            success: (data) => `Stopped container ${data?.container?.name}`,
-            error: (err) => `Failed to stop container: ${err.message}`,
-        });
+    toast.promise(stopPromise, {
+        loading: "Stopping container",
+        success: (data) => `Stopped container ${data?.container?.name}`,
+        error: (err) => `Failed to stop container: ${err.message}`,
+    });
 
-    } catch (err) {
-        console.error("Error stopping container:", err)
-    }
 }
 
 async function restartContainer(id: string) {
-    try {
-        const restartPromise = (async () => {
-            const response = await fetch(`${BASE_URL}/${id}/restart`, { method: 'POST' });
+    const restartPromise = (async () => {
+        const response = await fetch(`${BASE_URL}/${id}/restart`, { method: 'POST' });
 
-            if (!response.ok) {
-                throw new Error(`Server returned status ${response.status}`);
-            }
-
-            return await response.json();
-        })();
-
-        toast.promise(restartPromise, {
-            loading: 'Restarting container...',
-            success: (data) => `Successfully restarted container ${data?.container?.name ?? id}`,
-            error: (err) => `Failed to restart container: ${err.message}`
+        if (!response.ok) {
+            throw new Error(`Server returned status ${response.status}`);
         }
-        );
 
-    } catch (err) {
-        console.error("Error restarting container:", err);
+        return await response.json();
+    })();
+
+    toast.promise(restartPromise, {
+        loading: 'Restarting container...',
+        success: (data) => `Successfully restarted container ${data?.container?.name ?? id}`,
+        error: (err) => `Failed to restart container: ${err.message}`
     }
+    );
 }
 
 function deleteContainer(id: string) {

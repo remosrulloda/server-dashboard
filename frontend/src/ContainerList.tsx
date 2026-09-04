@@ -1,6 +1,7 @@
 import Container from "./components/Container";
 import { useState, useEffect } from "react";
 
+
 interface DockerPort {
     PrivatePort: number;
     PublicPort?: number;
@@ -15,22 +16,42 @@ interface DockerContainer {
 }
 
 const HOSTNAME = window.location.hostname;
-const BASE_URL = `http://${HOSTNAME}:3000/api/containers`
+const wsUri = `ws://${HOSTNAME}:3000/api/containers`;
 
 function ContainerList() {
     const [containers, setContainers] = useState<DockerContainer[]>([]);
-    const fetchLink = BASE_URL;
-
     useEffect(() => {
-        fetch(fetchLink)
-            .then(res => res.json())
-            .then((data) => {
+        const ws = new WebSocket(wsUri);
+
+        ws.addEventListener('open', () => {
+            console.log("connected");
+        });
+
+        ws.addEventListener("message", (event) => {
+            try {
+                const data: DockerContainer[] = JSON.parse(event.data);
                 setContainers(data);
-            })
-            .catch((error) => {
-                console.error("Error fetching containers: ", error);
-            })
-    }, [fetchLink]);
+            } catch (err) {
+                console.error("Failed to parse container payload:", err);
+            }
+        });
+
+        ws.addEventListener("error", (event) => {
+            console.error("WebSocket error:", event);
+        });
+
+        ws.addEventListener("close", (event) => {
+            if (event.wasClean) {
+                console.log(`Closed cleanly, code=${event.code}, reason=${event.reason}`);
+            } else {
+                console.log("Connection died");
+            }
+        });
+
+        return () => {
+            ws.close();
+        };
+    }, []);
 
     return (
         <div className="containers container-fluid p-4">

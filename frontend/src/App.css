@@ -18,7 +18,10 @@
 }
 
 .card a{
-  color: white;
+  color: #4464FF;
   text-decoration: none;
 }
 
+.card a:hover {
+  text-decoration: underline;
+}

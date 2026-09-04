@@ -1,8 +1,11 @@
 import express, { type Express, type Request, type Response } from 'express';
 import Docker from 'dockerode';
 import cors from 'cors';
+import expressWs from 'express-ws';
 
-const app: Express = express();
+const wsInstance = expressWs(express());
+const app: Express = wsInstance.app;
+
 app.use(cors());
 
 const port = 3000;
@@ -15,8 +18,9 @@ const socketPath = process.env.DOCKER_SOCKET_PATH || (
 const docker = new Docker({ socketPath });
 
 app.get('/', (req: Request, res: Response) => {
-    res.send('');
+    res.send('API running');
 });
+
 
 // Gets all containers
 app.get('/api/containers', async (req: Request, res: Response) => {
@@ -28,6 +32,35 @@ app.get('/api/containers', async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Failed to fetch docker containers' });
     }
 });
+
+app.ws('/api/containers', (ws: any) => {
+    const sendContainers = async () => {
+        try {
+            const containers = await docker.listContainers({ all: true });
+            if (ws.readyState == ws.OPEN) {
+                ws.send(JSON.stringify(containers));
+            }
+        } catch (err) {
+            console.error('Error fetching containers for ws:', err);
+        }
+    };
+
+    sendContainers();
+
+    const interval = setInterval(sendContainers, 3000);
+
+    ws.on('message', () => {
+        sendContainers();
+    });
+
+    ws.on('close', () => {
+        clearInterval(interval);
+        console.log('WebSocket client disconnected');
+    });
+});
+
+
+
 
 // Starts container
 app.post('/api/containers/:id/start', async (req: Request, res: Response) => {
