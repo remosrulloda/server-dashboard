@@ -33,6 +33,7 @@ app.get('/api/containers', async (req: Request, res: Response) => {
     }
 });
 
+// Websockets
 app.ws('/api/containers', (ws: any) => {
     const sendContainers = async () => {
         try {
