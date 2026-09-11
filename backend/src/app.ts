@@ -48,7 +48,7 @@ app.ws('/api/containers', (ws: any) => {
 
     sendContainers();
 
-    const interval = setInterval(sendContainers, 3000);
+    const interval = setInterval(sendContainers, 1000);
 
     ws.on('message', () => {
         sendContainers();
