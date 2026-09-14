@@ -13,10 +13,17 @@ interface DockerContainer {
     Names: string[];
     State: string;
     Ports: DockerPort[];
+    Labels?: Record<string, string>;
 }
 
 const HOSTNAME = window.location.hostname;
 const wsUri = `ws://${HOSTNAME}:3000/api/containers`;
+
+
+// export function getWebUiPort(container: DockerContainer) {
+//     // 1. Explicit user override
+
+// }
 
 function ContainerList() {
     const [containers, setContainers] = useState<DockerContainer[]>([]);

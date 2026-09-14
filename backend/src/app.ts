@@ -38,8 +38,11 @@ app.ws('/api/containers', (ws: any) => {
     const sendContainers = async () => {
         try {
             const containers = await docker.listContainers({ all: true });
+            const externalContainers = containers.filter(
+                container => container.Labels?.['com.docker.compose.project'] !== 'server-dashboard'
+            );
             if (ws.readyState == ws.OPEN) {
-                ws.send(JSON.stringify(containers));
+                ws.send(JSON.stringify(externalContainers));
             }
         } catch (err) {
             console.error('Error fetching containers for ws:', err);
