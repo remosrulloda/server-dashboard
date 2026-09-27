@@ -1,10 +1,10 @@
-import express, { type Express, type Request, type Response } from 'express';
+import express from 'express';
 import Docker from 'dockerode';
-import cors from 'cors';
-import expressWs from 'express-ws';
+import cors = require('cors');
+import expressWs = require('express-ws');
 
 const wsInstance = expressWs(express());
-const app: Express = wsInstance.app;
+const app = wsInstance.app;
 
 app.use(cors());
 
@@ -23,7 +23,7 @@ app.get('/', (req: Request, res: Response) => {
 
 
 // Gets all containers
-app.get('/api/containers', async (req: Request, res: Response) => {
+app.get('/api/containers', async (req, res, next) => {
     try {
         const containers = await docker.listContainers({ all: true });
         res.json(containers);
@@ -65,7 +65,7 @@ app.ws('/api/containers', (ws: any) => {
 
 
 // Starts container
-app.post('/api/containers/:id/start', async (req: Request, res: Response) => {
+app.post('/api/containers/:id/start', async (req, res, next) => {
     try {
         const container = docker.getContainer(req.params.id);
         let data = await container.inspect();
@@ -97,7 +97,7 @@ app.post('/api/containers/:id/start', async (req: Request, res: Response) => {
 });
 
 // Stops container
-app.post('/api/containers/:id/stop', async (req: Request, res: Response) => {
+app.post('/api/containers/:id/stop', async (req, res, next) => {
     try {
         const container = docker.getContainer(req.params.id);
         const data = await container.inspect();
@@ -125,7 +125,7 @@ app.post('/api/containers/:id/stop', async (req: Request, res: Response) => {
 });
 
 // Restarts container
-app.post('/api/containers/:id/restart', async (req: Request, res: Response) => {
+app.post('/api/containers/:id/restart', async (req, res, next) => {
     try {
         const container = docker.getContainer(req.params.id);
         await container.restart({ t: 15 });
@@ -153,7 +153,7 @@ app.post('/api/containers/:id/restart', async (req: Request, res: Response) => {
 });
 
 // Deletes container
-app.delete('/api/containers/:id', async (req: Request, res: Response) => {
+app.delete('/api/containers/:id', async (req, res, next) => {
     try {
         const container = docker.getContainer(req.params.id);
         const data = await container.inspect();
