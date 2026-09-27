@@ -8,7 +8,7 @@ const app: Express = wsInstance.app;
 
 app.use(cors());
 
-const port = 3000;
+const PORT = 3000;
 const isMac = process.platform === 'darwin';
 
 const socketPath = process.env.DOCKER_SOCKET_PATH || (
@@ -62,8 +62,6 @@ app.ws('/api/containers', (ws: any) => {
         console.log('WebSocket client disconnected');
     });
 });
-
-
 
 
 // Starts container
@@ -182,6 +180,4 @@ app.delete('/api/containers/:id', async (req: Request, res: Response) => {
 });
 
 
-app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`);
-}) 
+app.listen(PORT); 

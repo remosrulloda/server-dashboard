@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/app.ts"
   },
   "keywords": [],
   "author": "Remo <remosrulloda@gmail.com>",
@@ -15,9 +16,12 @@
     "dockerode": "^5.0.1",
     "express": "^5.2.1",
     "express-ws": "^5.0.2",
-    "node": "^26.6.0"
+    "node": "^26.6.0",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
-    "@types/dockerode": "^4.0.1"
+    "@types/dockerode": "^4.0.1",
+    "nodemon": "^3.1.14",
+    "typescript": "^6.0.3"
   }
 }
