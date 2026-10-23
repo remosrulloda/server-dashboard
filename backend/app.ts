@@ -1,7 +1,7 @@
 import express from 'express';
 import Docker from 'dockerode';
-import cors = require('cors');
-import expressWs = require('express-ws');
+import cors from 'cors';
+import expressWs from 'express-ws';
 
 const wsInstance = expressWs(express());
 const app = wsInstance.app;
@@ -17,7 +17,7 @@ const socketPath = process.env.DOCKER_SOCKET_PATH || (
 
 const docker = new Docker({ socketPath });
 
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (req, res) => {
     res.send('API running');
 });
 
