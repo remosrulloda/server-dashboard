@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 const HOSTNAME = window.location.hostname;
 const BASE_URL = `http://${HOSTNAME}:3000/api/containers`
 
-export function startContainer(id: string) {
+function startContainer(id: string) {
     const startPromise = (async () => {
         const response = await fetch(`${BASE_URL}/${id}/start`, { method: 'POST' });
         if (!response.ok) {
@@ -19,7 +19,7 @@ export function startContainer(id: string) {
     });
 }
 
-export async function stopContainer(id: string) {
+async function stopContainer(id: string) {
     const stopPromise = (async () => {
         const response = await fetch(`${BASE_URL}/${id}/stop`, { method: 'POST' });
         if (!response.ok) {
@@ -36,7 +36,7 @@ export async function stopContainer(id: string) {
 
 }
 
-export async function restartContainer(id: string) {
+async function restartContainer(id: string) {
     const restartPromise = (async () => {
         const response = await fetch(`${BASE_URL}/${id}/restart`, { method: 'POST' });
 
@@ -55,7 +55,7 @@ export async function restartContainer(id: string) {
     );
 }
 
-export function deleteContainer(id: string) {
+function deleteContainer(id: string) {
     const deletePromise = (async () => {
         const response = await fetch(`${BASE_URL}/${id}`, { method: 'DELETE' });
 
@@ -75,4 +75,4 @@ export function deleteContainer(id: string) {
     );
 }
 
-export { HOSTNAME }
+export { HOSTNAME, startContainer, stopContainer, restartContainer, deleteContainer };

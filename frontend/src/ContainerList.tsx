@@ -1,4 +1,4 @@
-import Container from "./components/Container";
+import Container from "./components/Container/Container";
 import { useState, useEffect } from "react";
 
 
@@ -19,22 +19,16 @@ interface DockerContainer {
 const HOSTNAME = window.location.hostname;
 const wsUri = `ws://${HOSTNAME}:3000/api/containers`;
 
-
-// export function getWebUiPort(container: DockerContainer) {
-//     // 1. Explicit user override
-
-// }
-
 function ContainerList() {
     const [containers, setContainers] = useState<DockerContainer[]>([]);
     useEffect(() => {
-        const ws = new WebSocket(wsUri);
+        const socket = new WebSocket(wsUri);
 
-        ws.addEventListener('open', () => {
+        socket.addEventListener('open', () => {
             console.log("connected");
         });
 
-        ws.addEventListener("message", (event) => {
+        socket.addEventListener("message", (event) => {
             try {
                 const data: DockerContainer[] = JSON.parse(event.data);
                 setContainers(data);
@@ -43,11 +37,11 @@ function ContainerList() {
             }
         });
 
-        ws.addEventListener("error", (event) => {
+        socket.addEventListener("error", (event) => {
             console.error("WebSocket error:", event);
         });
 
-        ws.addEventListener("close", (event) => {
+        socket.addEventListener("close", (event) => {
             if (event.wasClean) {
                 console.log(`Closed cleanly, code=${event.code}, reason=${event.reason}`);
             } else {
@@ -56,7 +50,7 @@ function ContainerList() {
         });
 
         return () => {
-            ws.close();
+            socket.close();
         };
     }, []);
 

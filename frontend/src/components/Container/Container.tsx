@@ -1,6 +1,6 @@
 import { Button, Card } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css"
-import { HOSTNAME, startContainer, stopContainer, restartContainer, deleteContainer } from '../containerActions';
+import { HOSTNAME, startContainer, stopContainer, restartContainer, deleteContainer } from './containerActions';
 
 interface ContainerProps {
     id: string;

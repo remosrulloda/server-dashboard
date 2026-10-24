@@ -17,7 +17,7 @@ const socketPath = process.env.DOCKER_SOCKET_PATH || (
 
 const docker = new Docker({ socketPath });
 
-app.get('/', (req, res) => {
+app.get('/', (req, res, next) => {
     res.send('API running');
 });
 
