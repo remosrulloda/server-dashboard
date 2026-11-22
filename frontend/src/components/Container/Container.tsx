@@ -1,30 +1,35 @@
-import { Button, Card } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css"
-import { HOSTNAME, startContainer, stopContainer, restartContainer, deleteContainer } from './containerActions';
+import "./container.css";
+import { HOSTNAME } from "./containerActions";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+
+import ContainerActions from "./ContainerActionsComponent";
+import ContainerTerminal from "../ContainerTerminal";
+
+library.add(fas);
 
 interface ContainerProps {
-    id: string;
-    containerName: string;
-    state: string;
-    port?: number;
+  id: string;
+  containerName: string;
+  state: string;
+  port?: number;
+  portLink: string;
 }
 
 export default function Container(props: ContainerProps) {
-    const portLink = props.port ? `http://${HOSTNAME}:${props.port}` : undefined;
-    return (
-        <Card style={{ width: '14rem' }} className="card">
-            <Card.Body>
-                <Card.Title ><a href={portLink}>{props.containerName}</a></Card.Title>
-                <Card.Text>
-                    State: {props.state} <br></br>
-                    Port: {props.port}
-                </Card.Text>
-                <br />
-                <Button variant="secondary" onClick={() => stopContainer(props.id)}>Stop</Button>
-                <Button variant="success" onClick={() => startContainer(props.id)}>Start</Button>
-                <Button variant="info" onClick={() => restartContainer(props.id)}>Restart</Button>
-                <Button variant="danger" onClick={() => deleteContainer(props.id)}>Delete</Button>
-            </Card.Body>
-        </Card >
-    );
+  const portLink = props.port ? `http://${HOSTNAME}:${props.port}` : undefined;
+
+  return (
+    <div className="container">
+      {/* <img src="" alt="" /> */}
+      <h1>{props.containerName}</h1>
+      <h3>State: {props.state}</h3>
+      <h3>Port: {props.port}</h3>
+      <button>
+        <a href={portLink}>Open</a>
+      </button>
+      <ContainerActions id={props.id} state={props.state} />
+      <ContainerTerminal />
+    </div>
+  );
 }

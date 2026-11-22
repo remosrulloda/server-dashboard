@@ -1,0 +1,20 @@
+.title-btn-grp {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.info-btn {
+  background: none;
+}
+
+.container-actions {
+  display: flex;
+  flex-direction: column;
+}
+
+.container {
+  border: 2px solid black;
+  border-radius: 10%;
+  padding: 20px;
+}

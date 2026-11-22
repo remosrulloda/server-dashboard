@@ -63,6 +63,14 @@ app.ws('/api/containers', (ws: any) => {
     });
 });
 
+// getInfo
+app.get('/api/containers/:id', async (req, res, next) => {
+    const container = docker.getContainer(req.params.id);
+    container.inspect((err, data) => {
+        return res.status(200).json(data);
+    });
+});
+
 
 // Starts container
 app.post('/api/containers/:id/start', async (req, res, next) => {

@@ -1,6 +1,7 @@
 import ContainerList from "./ContainerList";
-import { Toaster } from "react-hot-toast";
 import MenuBar from "./components/MenuBar";
+import { Toaster } from "react-hot-toast";
+import './xterm.css';
 
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
       <MenuBar />
       <Toaster />
       <ContainerList />
+
     </div>
   )
 }
