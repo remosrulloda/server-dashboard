@@ -1,191 +1,52 @@
-import express from 'express';
-import Docker from 'dockerode';
-import cors from 'cors';
-import expressWs from 'express-ws';
+import express, { type Request, type Response } from "express";
+import expressWs from "express-ws";
+import cors from "cors";
+
+import docker from "./docker.ts";
+import router from "./routes/container.ts";
 
 const wsInstance = expressWs(express());
 const app = wsInstance.app;
 
 app.use(cors());
-
-const PORT = 3000;
-const isMac = process.platform === 'darwin';
-
-const socketPath = process.env.DOCKER_SOCKET_PATH || (
-    isMac ? `${process.env.HOME}/.docker/run/docker.sock` : '/var/run/docker.sock'
-);
-
-const docker = new Docker({ socketPath });
-
-app.get('/', (req, res, next) => {
-    res.send('API running');
-});
-
-
-// Gets all containers
-app.get('/api/containers', async (req, res, next) => {
-    try {
-        const containers = await docker.listContainers({ all: true });
-        res.json(containers);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to fetch docker containers' });
-    }
-});
+app.use(express.json());
 
 // Websockets
-app.ws('/api/containers', (ws: any) => {
-    const sendContainers = async () => {
-        try {
-            const containers = await docker.listContainers({ all: true });
-            const externalContainers = containers.filter(
-                container => container.Labels?.['com.docker.compose.project'] !== 'server-dashboard'
-            );
-            if (ws.readyState == ws.OPEN) {
-                ws.send(JSON.stringify(externalContainers));
-            }
-        } catch (err) {
-            console.error('Error fetching containers for ws:', err);
-        }
-    };
+app.ws("/ws/containers", (ws: any) => {
+  const sendContainers = async () => {
+    try {
+      const containers = await docker.listContainers({ all: true });
+      const externalContainers = containers.filter(
+        (container) =>
+          container.Labels?.["com.docker.compose.project"] !==
+          "server-dashboard",
+      );
+      if (ws.readyState == ws.OPEN) {
+        ws.send(JSON.stringify(externalContainers));
+      }
+    } catch (err) {
+      console.error("Error fetching containers for ws:", err);
+    }
+  };
 
+  sendContainers();
+
+  const interval = setInterval(sendContainers, 1000);
+
+  ws.on("message", () => {
     sendContainers();
+  });
 
-    const interval = setInterval(sendContainers, 1000);
-
-    ws.on('message', () => {
-        sendContainers();
-    });
-
-    ws.on('close', () => {
-        clearInterval(interval);
-        console.log('WebSocket client disconnected');
-    });
+  ws.on("close", () => {
+    clearInterval(interval);
+    console.log("WebSocket client disconnected");
+  });
 });
 
-// getInfo
-app.get('/api/containers/:id', async (req, res, next) => {
-    const container = docker.getContainer(req.params.id);
-    container.inspect((err, data) => {
-        return res.status(200).json(data);
-    });
+app.use("/api/containers", router);
+
+app.get("/", (req: Request, res: Response) => {
+  res.send("API Running");
 });
 
-
-// Starts container
-app.post('/api/containers/:id/start', async (req, res, next) => {
-    try {
-        const container = docker.getContainer(req.params.id);
-        let data = await container.inspect();
-
-        if (!data.State.Running) {
-            await container.start();
-            data = await container.inspect();
-        }
-
-        return res.status(200).json({
-            success: true,
-            message: `Container ${req.params.id} started successfully`,
-            container: {
-                id: data.Id,
-                name: data.Name,
-                status: data.State.Status,
-                startedAt: data.State.StartedAt,
-                ports: data.NetworkSettings.Ports
-            }
-        });
-
-    } catch (err: any) {
-        console.error(err);
-        if (err.statusCode === 404) {
-            return res.status(404).json({ error: 'Container ID does not exist' });
-        }
-        res.status(500).json({ error: "Failed to start container" });
-    }
-});
-
-// Stops container
-app.post('/api/containers/:id/stop', async (req, res, next) => {
-    try {
-        const container = docker.getContainer(req.params.id);
-        const data = await container.inspect();
-        if (data.State.Running) {
-            await container.stop();
-        }
-        return res.status(200).json({
-            success: true,
-            message: `Container ${req.params.id} stopped successfully`,
-            container: {
-                id: data.Id,
-                name: data.Name,
-                status: data.State.Status,
-                startedAt: data.State.StartedAt,
-                ports: data.NetworkSettings.Ports
-            }
-        });
-    } catch (err: any) {
-        console.error(err);
-        if (err.statusCode === 404) {
-            return res.status(404).json({ error: 'Container ID does not exist' });
-        }
-        res.status(500).json({ error: "Failed to stop container" });
-    }
-});
-
-// Restarts container
-app.post('/api/containers/:id/restart', async (req, res, next) => {
-    try {
-        const container = docker.getContainer(req.params.id);
-        await container.restart({ t: 15 });
-        let data = await container.inspect();
-
-        return res.status(200).json({
-            success: true,
-            message: `Container ${req.params.id} stopped successfully`,
-            container: {
-                id: data.Id,
-                name: data.Name,
-                status: data.State.Status,
-                startedAt: data.State.StartedAt,
-                ports: data.NetworkSettings.Ports
-            }
-        });
-
-    } catch (err: any) {
-        console.error(err);
-        if (err.statusCode === 404) {
-            return res.status(404).json({ error: 'Container ID does not exist' });
-        }
-        res.status(500).json({ error: "Failed to restart container" });
-    }
-});
-
-// Deletes container
-app.delete('/api/containers/:id', async (req, res, next) => {
-    try {
-        const container = docker.getContainer(req.params.id);
-        const data = await container.inspect();
-        await container.remove({ force: true });
-
-        return res.status(200).json({
-            success: true,
-            message: `Container ${req.params.id} deleted successfully`,
-            container: {
-                id: data.Id,
-                name: data.Name,
-                status: data.State.Status,
-                startedAt: data.State.StartedAt,
-                ports: data.NetworkSettings.Ports
-            }
-        });
-    } catch (err: any) {
-        console.error(err);
-        if (err.statusCode === 404) {
-            return res.status(404).json({ error: 'Container ID does not exist' });
-        }
-        res.status(500).json({ error: "Failed to delete container" });
-    }
-});
-
-
-app.listen(PORT); 
+app.listen(3000);

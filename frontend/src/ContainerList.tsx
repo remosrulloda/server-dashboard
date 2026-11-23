@@ -16,7 +16,7 @@ interface DockerContainer {
 }
 
 const HOSTNAME = window.location.hostname;
-const wsUri = `ws://${HOSTNAME}:3000/api/containers`;
+const wsUri = `ws://${HOSTNAME}:3000/ws/containers`;
 
 function ContainerList() {
   const [containers, setContainers] = useState<DockerContainer[]>([]);

@@ -22,7 +22,7 @@ export default function TerminalComponent() {
     terminal.loadAddon(fitAddon);
     terminal.open(terminalRef.current);
     fitAddon.fit();
-    terminal.write("# ");
+    terminal.write("Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ");
 
     const disposable = terminal.onData((data) => {
       if (data === "\r") {
